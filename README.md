@@ -151,7 +151,7 @@ MIT License - Free to use and modify for personal or commercial purposes.
 
 ## 🙏 Acknowledgments
 
-Created to help users migrate from Intel TrueKey to modern password managers after TrueKey's discontinuation.
+Created to help users migrate from Intel TrueKey to modern password managers.
 
 **Special thanks to:**
 - The open-source community
