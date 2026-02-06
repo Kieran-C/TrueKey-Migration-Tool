@@ -33,6 +33,8 @@ jobs:
             --windowed `
             --icon=icon.ico `
             --add-data "icon.ico;." `
+            --add-data "gui;gui" `
+            --add-data "converter.py;." `
             --hidden-import=gui `
             --hidden-import=gui.app `
             --hidden-import=gui.widgets `

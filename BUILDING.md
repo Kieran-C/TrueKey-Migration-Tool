@@ -28,6 +28,8 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --windowed ^
     --icon=icon.ico ^
     --add-data "icon.ico;." ^
+    --add-data "gui;gui" ^
+    --add-data "converter.py;." ^
     --hidden-import=gui ^
     --hidden-import=gui.app ^
     --hidden-import=gui.widgets ^
@@ -40,7 +42,7 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
 - `--onefile` - Creates a single .exe file (easier to distribute)
 - `--windowed` - No console window (clean UI-only app)
 - `--icon` - Sets the application icon
-- `--add-data` - Includes the icon file in the bundle
+- `--add-data` - Includes data files in the bundle (icon, gui package, converter module)
 - `--hidden-import` - Explicitly includes the gui module and submodules
 - `main.py` - Entry point
 
@@ -57,7 +59,11 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('icon.ico', '.')],
+    datas=[
+        ('icon.ico', '.'),
+        ('gui', 'gui'),
+        ('converter.py', '.'),
+    ],
     hiddenimports=[
         'gui',
         'gui.app',
@@ -230,6 +236,8 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --windowed ^
     --icon=icon.ico ^
     --add-data "icon.ico;." ^
+    --add-data "gui;gui" ^
+    --add-data "converter.py;." ^
     --hidden-import=gui ^
     --hidden-import=gui.app ^
     --hidden-import=gui.widgets ^
