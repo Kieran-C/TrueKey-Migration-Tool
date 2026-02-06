@@ -28,6 +28,10 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --windowed ^
     --icon=icon.ico ^
     --add-data "icon.ico;." ^
+    --hidden-import=gui ^
+    --hidden-import=gui.app ^
+    --hidden-import=gui.widgets ^
+    --hidden-import=gui.styles ^
     main.py
 ```
 
@@ -37,6 +41,7 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
 - `--windowed` - No console window (clean UI-only app)
 - `--icon` - Sets the application icon
 - `--add-data` - Includes the icon file in the bundle
+- `--hidden-import` - Explicitly includes the gui module and submodules
 - `main.py` - Entry point
 
 ### Option 2: Using a Spec File
@@ -53,7 +58,13 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[('icon.ico', '.')],
-    hiddenimports=['tkinterdnd2'],
+    hiddenimports=[
+        'gui',
+        'gui.app',
+        'gui.widgets',
+        'gui.styles',
+        'tkinterdnd2',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -120,7 +131,7 @@ The executable will be created in the `dist/` folder:
 
 **Solution**: Make sure all imports are included. Add to `hiddenimports` in spec file:
 ```python
-hiddenimports=['tkinterdnd2', 'PIL'],
+hiddenimports=['gui', 'gui.app', 'gui.widgets', 'gui.styles', 'tkinterdnd2', 'PIL'],
 ```
 
 ### Large file size
@@ -219,6 +230,10 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --windowed ^
     --icon=icon.ico ^
     --add-data "icon.ico;." ^
+    --hidden-import=gui ^
+    --hidden-import=gui.app ^
+    --hidden-import=gui.widgets ^
+    --hidden-import=gui.styles ^
     --clean ^
     main.py
 

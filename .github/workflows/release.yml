@@ -33,6 +33,10 @@ jobs:
             --windowed `
             --icon=icon.ico `
             --add-data "icon.ico;." `
+            --hidden-import=gui `
+            --hidden-import=gui.app `
+            --hidden-import=gui.widgets `
+            --hidden-import=gui.styles `
             --clean `
             main.py
       
