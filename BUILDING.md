@@ -35,6 +35,7 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --hidden-import=tkinter.font ^
     --hidden-import=tkinter.filedialog ^
     --hidden-import=tkinter.messagebox ^
+    --hidden-import=tkinterdnd2 ^
     --hidden-import=gui ^
     --hidden-import=gui.app ^
     --hidden-import=gui.widgets ^
@@ -42,6 +43,7 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --hidden-import=csv ^
     --hidden-import=io ^
     --collect-submodules=tkinter ^
+    --collect-all=tkinterdnd2 ^
     main.py
 ```
 
@@ -51,8 +53,9 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
 - `--windowed` - No console window (clean UI-only app)
 - `--icon` - Sets the application icon
 - `--add-data` - Includes data files in the bundle (icon, gui package, converter module)
-- `--hidden-import` - Explicitly includes tkinter, gui modules and submodules
+- `--hidden-import` - Explicitly includes tkinter, tkinterdnd2, gui modules and submodules
 - `--collect-submodules` - Collects all tkinter submodules automatically
+- `--collect-all` - Collects all tkinterdnd2 files including DLLs for drag & drop
 - `main.py` - Entry point
 
 ### Option 2: Using a Spec File
@@ -79,11 +82,11 @@ a = Analysis(
         'tkinter.font',
         'tkinter.filedialog',
         'tkinter.messagebox',
+        'tkinterdnd2',
         'gui',
         'gui.app',
         'gui.widgets',
         'gui.styles',
-        'tkinterdnd2',
         'csv',
         'io',
     ],
@@ -259,6 +262,7 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --hidden-import=tkinter.font ^
     --hidden-import=tkinter.filedialog ^
     --hidden-import=tkinter.messagebox ^
+    --hidden-import=tkinterdnd2 ^
     --hidden-import=gui ^
     --hidden-import=gui.app ^
     --hidden-import=gui.widgets ^
@@ -266,6 +270,7 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --hidden-import=csv ^
     --hidden-import=io ^
     --collect-submodules=tkinter ^
+    --collect-all=tkinterdnd2 ^
     --clean ^
     main.py
 

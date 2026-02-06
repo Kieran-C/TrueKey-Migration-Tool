@@ -40,6 +40,7 @@ jobs:
             --hidden-import=tkinter.font `
             --hidden-import=tkinter.filedialog `
             --hidden-import=tkinter.messagebox `
+            --hidden-import=tkinterdnd2 `
             --hidden-import=gui `
             --hidden-import=gui.app `
             --hidden-import=gui.widgets `
@@ -47,6 +48,7 @@ jobs:
             --hidden-import=csv `
             --hidden-import=io `
             --collect-submodules=tkinter `
+            --collect-all=tkinterdnd2 `
             --clean `
             main.py
       

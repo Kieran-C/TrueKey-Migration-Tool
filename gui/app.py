@@ -41,19 +41,26 @@ class CSVConverterApp:
     def _set_app_icon(self):
         """Set the application icon."""
         try:
-            # Try to load icon.ico or icon.png from the same directory
-            from pathlib import Path
-            script_dir = Path(__file__).parent
+            # Get the correct path for bundled resources
+            import sys
+            import os
+            
+            if getattr(sys, 'frozen', False):
+                # Running as compiled executable
+                base_path = sys._MEIPASS
+            else:
+                # Running as script
+                base_path = Path(__file__).parent.parent
             
             # Try .ico first (Windows native format)
-            ico_path = script_dir / "icon.ico"
-            if ico_path.exists():
-                self.root.iconbitmap(str(ico_path))
+            ico_path = os.path.join(base_path, "icon.ico")
+            if os.path.exists(ico_path):
+                self.root.iconbitmap(ico_path)
                 return
             
             # Try .png format
-            png_path = script_dir / "icon.png"
-            if png_path.exists():
+            png_path = os.path.join(base_path, "icon.png")
+            if os.path.exists(png_path):
                 try:
                     from PIL import Image, ImageTk
                     img = Image.open(png_path)
