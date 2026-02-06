@@ -30,10 +30,18 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --add-data "icon.ico;." ^
     --add-data "gui;gui" ^
     --add-data "converter.py;." ^
+    --hidden-import=tkinter ^
+    --hidden-import=tkinter.ttk ^
+    --hidden-import=tkinter.font ^
+    --hidden-import=tkinter.filedialog ^
+    --hidden-import=tkinter.messagebox ^
     --hidden-import=gui ^
     --hidden-import=gui.app ^
     --hidden-import=gui.widgets ^
     --hidden-import=gui.styles ^
+    --hidden-import=csv ^
+    --hidden-import=io ^
+    --collect-submodules=tkinter ^
     main.py
 ```
 
@@ -43,7 +51,8 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
 - `--windowed` - No console window (clean UI-only app)
 - `--icon` - Sets the application icon
 - `--add-data` - Includes data files in the bundle (icon, gui package, converter module)
-- `--hidden-import` - Explicitly includes the gui module and submodules
+- `--hidden-import` - Explicitly includes tkinter, gui modules and submodules
+- `--collect-submodules` - Collects all tkinter submodules automatically
 - `main.py` - Entry point
 
 ### Option 2: Using a Spec File
@@ -65,11 +74,18 @@ a = Analysis(
         ('converter.py', '.'),
     ],
     hiddenimports=[
+        'tkinter',
+        'tkinter.ttk',
+        'tkinter.font',
+        'tkinter.filedialog',
+        'tkinter.messagebox',
         'gui',
         'gui.app',
         'gui.widgets',
         'gui.styles',
         'tkinterdnd2',
+        'csv',
+        'io',
     ],
     hookspath=[],
     hooksconfig={},
@@ -238,10 +254,18 @@ pyinstaller --name="TrueKey-Migration-Tool" ^
     --add-data "icon.ico;." ^
     --add-data "gui;gui" ^
     --add-data "converter.py;." ^
+    --hidden-import=tkinter ^
+    --hidden-import=tkinter.ttk ^
+    --hidden-import=tkinter.font ^
+    --hidden-import=tkinter.filedialog ^
+    --hidden-import=tkinter.messagebox ^
     --hidden-import=gui ^
     --hidden-import=gui.app ^
     --hidden-import=gui.widgets ^
     --hidden-import=gui.styles ^
+    --hidden-import=csv ^
+    --hidden-import=io ^
+    --collect-submodules=tkinter ^
     --clean ^
     main.py
 

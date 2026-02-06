@@ -35,10 +35,18 @@ jobs:
             --add-data "icon.ico;." `
             --add-data "gui;gui" `
             --add-data "converter.py;." `
+            --hidden-import=tkinter `
+            --hidden-import=tkinter.ttk `
+            --hidden-import=tkinter.font `
+            --hidden-import=tkinter.filedialog `
+            --hidden-import=tkinter.messagebox `
             --hidden-import=gui `
             --hidden-import=gui.app `
             --hidden-import=gui.widgets `
             --hidden-import=gui.styles `
+            --hidden-import=csv `
+            --hidden-import=io `
+            --collect-submodules=tkinter `
             --clean `
             main.py
       
