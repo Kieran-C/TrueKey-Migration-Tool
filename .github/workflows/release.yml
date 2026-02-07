@@ -9,8 +9,25 @@ permissions:
   contents: write  # Required to create releases and upload assets
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            output_name: TrueKey-Migration-Tool.exe
+            artifact_name: TrueKey-Migration-Tool-Windows.exe
+            separator: ";"
+          - os: ubuntu-latest
+            output_name: TrueKey-Migration-Tool
+            artifact_name: TrueKey-Migration-Tool-Linux
+            separator: ":"
+          - os: macos-latest
+            output_name: TrueKey-Migration-Tool
+            artifact_name: TrueKey-Migration-Tool-macOS
+            separator: ":"
+    
+    runs-on: ${{ matrix.os }}
     
     steps:
       - name: Checkout code
@@ -26,7 +43,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller tkinterdnd2 Pillow
       
-      - name: Build executable
+      - name: Build executable (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
           pyinstaller --name="TrueKey-Migration-Tool" `
             --onefile `
@@ -52,26 +70,88 @@ jobs:
             --clean `
             main.py
       
-      - name: Verify build
+      - name: Build executable (Linux/Mac)
+        if: matrix.os != 'windows-latest'
         run: |
-          if (Test-Path "dist/TrueKey-Migration-Tool.exe") {
+          pyinstaller --name="TrueKey-Migration-Tool" \
+            --onefile \
+            --windowed \
+            --icon=icon.ico \
+            --add-data "icon.ico${{ matrix.separator }}." \
+            --add-data "gui${{ matrix.separator }}gui" \
+            --add-data "converter.py${{ matrix.separator }}." \
+            --hidden-import=tkinter \
+            --hidden-import=tkinter.ttk \
+            --hidden-import=tkinter.font \
+            --hidden-import=tkinter.filedialog \
+            --hidden-import=tkinter.messagebox \
+            --hidden-import=tkinterdnd2 \
+            --hidden-import=gui \
+            --hidden-import=gui.app \
+            --hidden-import=gui.widgets \
+            --hidden-import=gui.styles \
+            --hidden-import=csv \
+            --hidden-import=io \
+            --collect-submodules=tkinter \
+            --collect-all=tkinterdnd2 \
+            --clean \
+            main.py
+      
+      - name: Verify build (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          if (Test-Path "dist/${{ matrix.output_name }}") {
             Write-Host "Build successful!"
-            $size = (Get-Item "dist/TrueKey-Migration-Tool.exe").Length / 1MB
+            $size = (Get-Item "dist/${{ matrix.output_name }}").Length / 1MB
             Write-Host "File size: $([math]::Round($size, 2)) MB"
           } else {
             Write-Host "Build failed - executable not found"
             exit 1
           }
       
+      - name: Verify build (Linux/Mac)
+        if: matrix.os != 'windows-latest'
+        run: |
+          if [ -f "dist/${{ matrix.output_name }}" ]; then
+            echo "Build successful!"
+            size=$(du -h "dist/${{ matrix.output_name }}" | cut -f1)
+            echo "File size: $size"
+            chmod +x "dist/${{ matrix.output_name }}"
+          else
+            echo "Build failed - executable not found"
+            exit 1
+          fi
+      
+      - name: Rename artifact
+        run: |
+          mv "dist/${{ matrix.output_name }}" "dist/${{ matrix.artifact_name }}"
+        shell: bash
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dist/${{ matrix.artifact_name }}
+          retention-days: 7
+  
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
       - name: Extract version from tag
         id: get_version
         run: |
-          $version = "${{ github.ref_name }}" -replace '^v', ''
-          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
-        shell: pwsh
+          version="${{ github.ref_name }}"
+          version="${version#v}"
+          echo "VERSION=$version" >> $GITHUB_OUTPUT
       
       - name: Create Release
-        id: create_release
         uses: softprops/action-gh-release@v1
         with:
           name: TrueKey Migration Tool ${{ github.ref_name }}
@@ -79,10 +159,17 @@ jobs:
             ## 🎉 Release ${{ github.ref_name }}
             
             ### 📥 Download
-            Download `TrueKey-Migration-Tool.exe` below and double-click to run. No installation required!
+            Choose the version for your operating system:
+            - **Windows**: `TrueKey-Migration-Tool-Windows.exe`
+            - **macOS**: `TrueKey-Migration-Tool-macOS`
+            - **Linux**: `TrueKey-Migration-Tool-Linux`
             
-            ### ⚠️ Windows Security Warning
-            Windows may show a security warning because the app isn't code-signed. Click "More info" then "Run anyway" to proceed safely.
+            Download and run - no installation required!
+            
+            ### ⚠️ Security Warnings
+            - **Windows**: May show a security warning because the app isn't code-signed. Click "More info" then "Run anyway" to proceed safely.
+            - **macOS**: You may need to right-click and select "Open" the first time, or run `chmod +x TrueKey-Migration-Tool-macOS` in Terminal.
+            - **Linux**: You may need to make the file executable: `chmod +x TrueKey-Migration-Tool-Linux`
             
             ### ✨ What's New
             <!-- Add release notes here -->
@@ -94,15 +181,10 @@ jobs:
             
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/v${{ steps.get_version.outputs.VERSION }}...HEAD
           files: |
-            dist/TrueKey-Migration-Tool.exe
+            artifacts/TrueKey-Migration-Tool-Windows.exe/TrueKey-Migration-Tool-Windows.exe
+            artifacts/TrueKey-Migration-Tool-macOS/TrueKey-Migration-Tool-macOS
+            artifacts/TrueKey-Migration-Tool-Linux/TrueKey-Migration-Tool-Linux
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-executable
-          path: dist/TrueKey-Migration-Tool.exe
-          retention-days: 7
